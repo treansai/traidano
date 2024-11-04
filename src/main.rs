@@ -36,6 +36,8 @@ use tracing_subscriber::{fmt, Registry};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use traidano::{init_logs, init_metrics, init_tracer_provider};
+use tower_http::cors::CorsLayer;
+use tower_http::ServiceBuilder;
 
 pub mod base;
 pub mod bot;
@@ -153,6 +155,13 @@ async fn main() {
         .init(&db, shared_state.clone())
         .await;
 
+    // cors
+    let cors = CorsLayer::new()
+        .allow_methods(vec!["GET", "POST", "DELETE"])
+        .allow_headers(vec!["Content-Type"])
+        .allow_origin(vec!["*"])
+        .allow_credentials(true);
+
     // the app server
     let app = Router::new()
         // base
@@ -167,7 +176,11 @@ async fn main() {
         .route("/bots/:id/stop", post(stop_bot))
         // instrumentation
         .route("/metrics", get(metrics_handler))
-        .layer(TraceLayer::new_for_http())
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+
+        )
         .with_state(shared_state);
 
     // listener
