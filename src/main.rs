@@ -12,6 +12,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use axum::{routing::get, routing::post, Router, ServiceExt};
 use base::{ApiConfig, Client};
+use hyper::Method;
 use opentelemetry::metrics::MeterProvider;
 use opentelemetry::trace::TracerProvider;
 use opentelemetry::trace::{TraceContextExt, Tracer, TracerProvider as _};
@@ -24,6 +25,7 @@ use opentelemetry_stdout as stdout;
 use prometheus::{Encoder, TextEncoder};
 use serde::Serialize;
 use sqlx::postgres::PgPoolOptions;
+use tower::ServiceBuilder;
 use std::sync::Arc;
 use log::LevelFilter;
 use tokio::sync::Mutex;
@@ -36,8 +38,7 @@ use tracing_subscriber::{fmt, Registry};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use traidano::{init_logs, init_metrics, init_tracer_provider};
-use tower_http::cors::CorsLayer;
-use tower_http::ServiceBuilder;
+use tower_http::cors::{self, CorsLayer};
 
 pub mod base;
 pub mod bot;
@@ -157,11 +158,9 @@ async fn main() {
 
     // cors
     let cors = CorsLayer::new()
-        .allow_methods(vec!["GET", "POST", "DELETE"])
-        .allow_headers(vec!["Content-Type"])
-        .allow_origin(vec!["*"])
-        .allow_credentials(true);
-
+        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_origin(cors::Any);
+    
     // the app server
     let app = Router::new()
         // base
@@ -179,7 +178,7 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
-
+                .layer(cors)
         )
         .with_state(shared_state);
 

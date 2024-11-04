@@ -48,7 +48,8 @@ tracing-subscriber = {version = "0.3.18", features = ["env-filter","registry", "
 tokio = { version = "1", features = ["full"] }
 tokio-rustls = "0.26.0"
 tokio-native-tls = "0.3.1"
-tower-http = { version = "0.5.2", features = ["trace"] }
+tower = "0.5.1"
+tower-http = { version = "0.6.1", features = ["cors", "trace"] }
 reqwest = "0.12.5"
 uuid = { version = "1.10.0", features = ["v4"] }
 anyhow = "1.0.86"
