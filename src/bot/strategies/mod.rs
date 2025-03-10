@@ -27,8 +27,3 @@ async fn should_execute(state: &Arc<AppState>, config: &BotConfig) -> Option<boo
     };
     Some(should_execute)
 }
-
-pub struct MeanReversion {
-
-}
-

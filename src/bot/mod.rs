@@ -42,7 +42,6 @@ impl FromStr for BotStrategy {
 pub enum MarketType {
     Crypto,
     Equity,
-    SolanaMemecoin,
 }
 impl FromStr for MarketType {
     type Err = ();

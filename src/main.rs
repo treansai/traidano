@@ -99,26 +99,19 @@ async fn main() {
         .init();
 
     // Get vars
-    let base_url =
-        std::env::var("BASE_URL").unwrap_or("https://paper-api.alpaca.markets/v2/".to_string());
-    let stream_url =
-        std::env::var("STREAM_URL").unwrap_or("https://paper-api.alpaca.markets/v2/".to_string());
-    let stock_data_url = std::env::var("STOCK_DATA_URL")
-        .unwrap_or("https://data.alpaca.markets/v2/stocks".to_string());
-    let crypto_data_url = std::env::var("CRYPTO_DATA_URL")
-        .unwrap_or("https://data.alpaca.markets/v1beta3/crypto/".to_string());
-    let api_key = std::env::var("API_KEY").unwrap_or("PKHN2MOBD64Q1N4AUNIZ".to_string());
-    let secret_key = std::env::var("SECRET_KEY")
-        .unwrap_or("HKqNazp498yYZHQVfaBU3ubF52JyVHFNxjH2ijoq".to_string());
+    // let base_url =
+    //     std::env::var("BASE_URL").unwrap_or("https://paper-api.alpaca.markets/v2/".to_string());
+    // let stream_url =
+    //     std::env::var("STREAM_URL").unwrap_or("https://paper-api.alpaca.markets/v2/".to_string());
+    // let stock_data_url = std::env::var("STOCK_DATA_URL")
+    //     .unwrap_or("https://data.alpaca.markets/v2/stocks".to_string());
+    // let crypto_data_url = std::env::var("CRYPTO_DATA_URL")
+    //     .unwrap_or("https://data.alpaca.markets/v1beta3/crypto/".to_string());
+    // let api_key = std::env::var("API_KEY").unwrap_or("PKHN2MOBD64Q1N4AUNIZ".to_string());
+    // let secret_key = std::env::var("SECRET_KEY")
+    //     .unwrap_or("HKqNazp498yYZHQVfaBU3ubF52JyVHFNxjH2ijoq".to_string());
 
-    let api_config = ApiConfig {
-        base_url,
-        stream_url,
-        stock_data_url,
-        crypto_data_url,
-        api_key,
-        secret_key,
-    };
+    let api_config = ApiConfig::from_env_vars();
 
     // alpaca client
     let client = Client::builder().config(api_config).build().unwrap();
@@ -173,6 +166,10 @@ async fn main() {
         .route("/bots", post(create_bot).get(get_bots))
         .route("/bots/:id", get(get_bot).delete(remove_bot))
         .route("/bots/:id/stop", post(stop_bot))
+        // solana
+        .route("/bots/:id/solana/wallet", post(register_bot_wallet).get(get_wallet))
+        .route("/bots/:id/solana/trades", get(get_solana_trades))
+        .route("/solana/trending", get(get_trending_tokens))
         // instrumentation
         .route("/metrics", get(metrics_handler))
         .layer(
