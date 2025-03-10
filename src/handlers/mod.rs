@@ -11,6 +11,7 @@ pub mod bar;
 pub mod bot;
 pub mod market;
 pub mod order;
+pub mod solana;
 
 pub async fn rate_limited_request<T>(
     app_state: &AppState,

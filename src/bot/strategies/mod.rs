@@ -5,9 +5,10 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub mod mean_reversion;
-mod moving_avarage;
-mod oth;
+pub mod moving_avarage;
+pub mod solana_meme;
 pub mod smart_money;
+
 
 async fn should_execute(state: &Arc<AppState>, config: &BotConfig) -> Option<bool> {
     let should_execute = match config.market {
