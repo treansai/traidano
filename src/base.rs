@@ -28,6 +28,12 @@ pub struct ApiConfig {
     pub crypto_data_url: String,
     pub api_key: String,
     pub secret_key: String,
+    pub jupiter_api_quote_url: String,
+    pub jupiter_api_swap_url: String,
+    pub jupiter_api_token_url: String,
+    // social media urls
+    pub twitter_url: Option<String>,
+    pub telegram_url: Option<String>,
 }
 
 impl Default for ApiConfig {
@@ -39,6 +45,11 @@ impl Default for ApiConfig {
             crypto_data_url: "crypto_data_url".to_string(),
             api_key: "api_key".to_string(),
             secret_key: "secret_key".to_string(),
+            jupiter_api_quote_url: "jupiter_api_quote_url".to_string(),
+            jupiter_api_swap_url: "jupiter_api_swap_url".to_string(),
+            jupiter_api_token_url: "jupiter_api_token_url".to_string(),
+            twitter_url: None,
+            telegram_url: None,
         }
     }
 }
@@ -52,11 +63,40 @@ impl ApiConfig {
             crypto_data_url: base_config.api_config.crypto_data_url,
             api_key: base_config.api_config.api_key.unwrap(),
             secret_key: base_config.api_config.secret.unwrap(),
+            jupiter_api_quote_url: base_config.api_config.jupiter_api_quote_url,
+            jupiter_api_swap_url: base_config.api_config.jupiter_api_swap_url,
+            jupiter_api_token_url: base_config.api_config.jupiter_api_token_url,
+            twitter_url: base_config.api_config.twitter_url,
+            telegram_url: base_config.api_config.telegram_url,
         }
     }
 
     pub fn from_env_vars() -> ApiConfig {
-        todo!("Not implemented")
+        let base_url = std::env::var("BASE_URL").expect("BASE_URL is not set");
+        let stream_url = std::env::var("STREAM_URL").expect("STREAM_URL is not set");
+        let stock_data_url = std::env::var("STOCK_DATA_URL").expect("STOCK_DATA_URL is not set");
+        let crypto_data_url = std::env::var("CRYPTO_DATA_URL").expect("CRYPTO_DATA_URL is not set");
+        let api_key = std::env::var("API_KEY").expect("API_KEY is not set");
+        let secret_key = std::env::var("SECRET_KEY").expect("SECRET_KEY is not set");
+        let jupiter_api_quote_url = std::env::var("JUPITER_API_QUOTE_URL").expect("JUPITER_API_QUOTE_URL is not set");
+        let jupiter_api_swap_url = std::env::var("JUPITER_API_SWAP_URL").expect("JUPITER_API_SWAP_URL is not set");
+        let jupiter_api_token_url = std::env::var("JUPITER_API_TOKEN_URL").expect("JUPITER_API_TOKEN_URL is not set");
+        let twitter_url = std::env::var("TWITTER_URL").or_else(|| None);
+        let telegram_url = std::env::var("TELEGRAM_URL").or_else(|| None);
+        
+        Self {
+            base_url,
+            stream_url,
+            stock_data_url,
+            crypto_data_url,
+            api_key,
+            secret_key,
+            jupiter_api_quote_url,
+            jupiter_api_swap_url,
+            jupiter_api_token_url,
+            twitter_url: Some(twitter_url),
+            telegram_url: Some(telegram_url),
+        }
     }
 }
 
@@ -189,6 +229,11 @@ mod tests {
             crypto_data_url: "".to_string(),
             api_key: "key".to_string(),
             secret_key: "secret".to_string(),
+            jupiter_api_quote_url: "".to_string(),
+            jupiter_api_swap_url: "".to_string(),
+            jupiter_api_token_url: "".to_string(),
+            twitter_url: None,
+            telegram_url: None,
         };
 
         let client = Client::builder().config(api_config.clone()).build();

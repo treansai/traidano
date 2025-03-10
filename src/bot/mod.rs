@@ -1,5 +1,6 @@
 pub mod bot_manager;
-mod strategies;
+pub mod strategies;
+pub mod nn;
 
 use crate::base::{AppState, Client};
 use crate::bot::strategies::mean_reversion::mean_reversion_strategy;
@@ -41,6 +42,7 @@ impl FromStr for BotStrategy {
 pub enum MarketType {
     Crypto,
     Equity,
+    SolanaMemecoin,
 }
 impl FromStr for MarketType {
     type Err = ();
@@ -58,6 +60,7 @@ impl fmt::Display for MarketType {
         match *self {
             MarketType::Equity => write!(f, "Equity"),
             MarketType::Crypto => write!(f, "Crypto"),
+            _ => write!(f, "UNDEFINED"),
         }
     }
 }
